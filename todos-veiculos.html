@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Todos os Veículos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    .vehicle {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Todos os Veículos</h1>
+  <div id="list"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyb6n4u3MesD8fjAgUuuAySUJV1oVe6q46PsZUZrfyCWRotDQnDFGglCXyL6flSvFh13A/exec";
+
+    async function fetchVehicles() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+      data.forEach(vehicle => {
+        const div = document.createElement("div");
+        div.className = "vehicle";
+        div.innerHTML = `
+          <strong>${{vehicle.model}</strong> - R$${{vehicle.value}<br>
+          Vendedor: ${{vehicle.seller}<br>
+          <button onclick='viewDetails(${{JSON.stringify(vehicle)})'>Ver Detalhes</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function viewDetails(vehicle) {
+      sessionStorage.setItem("vehicleDetails", JSON.stringify(vehicle));
+      window.location.href = "vehicle-details.html";
+    }
+
+    fetchVehicles();
+  </script>
+</body>
+</html>

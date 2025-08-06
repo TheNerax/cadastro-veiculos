@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalhes do Veículo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 12px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Detalhes do Veículo</h1>
+  <div class="box" id="details"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyb6n4u3MesD8fjAgUuuAySUJV1oVe6q46PsZUZrfyCWRotDQnDFGglCXyL6flSvFh13A/exec";
+    const vehicle = JSON.parse(sessionStorage.getItem("vehicleDetails"));
+    const box = document.getElementById("details");
+
+    if (vehicle) {
+      box.innerHTML = `
+        <p><strong>Modelo:</strong> ${vehicle.model}</p>
+        <p><strong>Valor:</strong> R$ ${vehicle.value}</p>
+        <p><strong>Vendedor:</strong> ${vehicle.seller}</p>
+        <p><strong>Data:</strong> ${vehicle.dateTime}</p>
+        <button onclick="excluir('${vehicle.id}')">Excluir</button>
+      `;
+    }
+
+    async function excluir(id) {
+      if (!confirm("Confirma exclusão?")) return;
+      await fetch(API_URL + "?id=" + id, { method: "DELETE" });
+      alert("Excluído com sucesso");
+      window.location.href = "todos-veiculos.html";
+    }
+  </script>
+</body>
+</html>

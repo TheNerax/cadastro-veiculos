@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Veículos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      padding: 20px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d0d0d, #1c1c1c);
+      animation: fadeIn 1s ease-out;
+    }
+    h1 {
+      text-align: center;
+      color: #ffd700;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 10px;
+    }
+    #userInfo {
+      text-align: center;
+      margin-bottom: 10px;
+      display: none;
+    }
+    #logoutButton {
+      background-color: #ff4d4d;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .form-section, .list-section {
+      flex: 1;
+      min-width: 300px;
+      background-color: #1c1c1c;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    label { display: block; margin: 10px 0 5px; }
+    input, select {
+      width: 100%; padding: 10px; margin-bottom: 15px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #333; color: #fff;
+      transition: border 0.3s ease;
+    }
+    input:focus, select:focus {
+      border: 1px solid #ffd700;
+    }
+    .submit-btn {
+      width: 100%; padding: 12px; background-color: #ffd700; color: #000;
+      border: none; border-radius: 5px; cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .submit-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    }
+    .vehicle-item {
+      background-color: #222; padding: 15px; margin-bottom: 10px;
+      border-radius: 5px;
+      animation: fadeIn 1s ease-out;
+      transition: transform 0.3s;
+    }
+    .vehicle-item:hover {
+      transform: scale(1.02);
+    }
+    .vehicle-item span { display: block; margin-bottom: 5px; }
+    .vehicle-item i { color: #ffd700; margin-right: 5px; }
+    .vehicle-thumb {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 5px;
+      transition: transform 0.3s ease;
+    }
+    .vehicle-thumb:hover {
+      transform: scale(1.1);
+    }
+    .login-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(18,18,18,0.98);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9999;
+    }
+    .login-box {
+      background-color: #1c1c1c; padding: 30px; border-radius: 10px;
+      width: 90%; max-width: 400px; text-align: center;
+    }
+    .login-box input { width: 100%; margin: 10px 0; }
+    .login-box button { width: 100%; margin-top: 10px; }
+    .vehicle-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .vehicle-info {
+      flex: 1;
+    }
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+      <input type="text" id="loginUser" placeholder="Usuário" required />
+      <input type="password" id="loginPass" placeholder="Senha" required />
+      <button onclick="login()">Entrar</button>
+    </div>
+  </div>
+
+  <h1><i class="fas fa-car"></i> Cadastro de Veículos</h1>
+  <div id="userInfo">
+    <p>Usuário logado como: <strong id="usernameDisplay"></strong></p>
+    <button id="logoutButton" onclick="logout()">Deslogar</button>
+  </div>
+
+  <div class="container">
+    <div class="form-section">
+      <form id="vehicleForm">
+        <label for="model">Modelo:</label>
+        <input type="text" id="model" required />
+        <label for="year">Ano:</label>
+        <input type="number" id="year" required />
+        <label for="color">Cor:</label>
+        <select id="color" required>
+          <option value="" disabled selected>Selecione a cor</option>
+          <option>Preto</option><option>Prata</option><option>Branco</option>
+        </select>
+        <label for="bodyType">Carroceria:</label>
+        <select id="bodyType" required>
+          <option value="" disabled selected>Selecione a carroceria</option>
+          <option>Sedã</option><option>Hatch</option><option>SUV</option>
+        </select>
+        <label for="manufacturer">Fabricante:</label>
+        <select id="manufacturer" required>
+          <option value="" disabled selected>Selecione o fabricante</option>
+          <option>Fiat</option><option>Ford</option><option>Chevrolet</option>
+        </select>
+        <div id="sellerGroup">
+          <label for="seller">Vendedor:</label>
+          <select id="seller" required>
+            <option value="" disabled selected>Selecione o vendedor</option>
+            <option>Allysson</option><option>Gabriel</option><option>Kaio</option><option>Kaique</option><option>Nicolas</option>
+          </select>
+        </div>
+        <label for="value">Valor da Carta:</label>
+        <input type="number" id="value" required />
+
+        <label for="image">Imagem (opcional):</label>
+        <input type="file" id="image" accept="image/*" />
+
+        <button type="submit" class="submit-btn">Cadastrar</button>
+
+        <div style="text-align:center; margin-top: 15px;">
+          <a href="todos-veiculos.html" style="background-color: #ffd700; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3); transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fas fa-list"></i> Ver todos os veículos
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="list-section">
+      <h2 style="text-align: center; margin-bottom: 15px;">Último Veículo Cadastrado</h2>
+      <div id="vehicleList"></div>
+    </div>
+  </div>
+
+<script>
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxGCC5K6a0qvV8kUmAX2ro01WW6-ApcgvibWdY88d0yIkgcjHrCTI7sMVaNsr-pyplb/exec';
+let loggedUser = null;
+const userMap = {
+  admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
+};
+
+function login() {
+  const user = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value.trim();
+  if ((user === "admin" && pass === "admingc123") || (userMap[user] && pass === user + '123')) {
+    loggedUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('sellerGroup').style.display = 'none';
+    document.getElementById('seller').required = false;
+    document.getElementById('usernameDisplay').textContent = userMap[user];
+    fetchVehicles();
+  } else alert('Usuário ou senha inválidos');
+}
+
+function logout() {
+  loggedUser = null;
+  location.reload();
+}
+
+async function fetchVehicles() {
+  const res = await fetch(scriptURL);
+  const data = await res.json();
+  const list = document.getElementById('vehicleList');
+  list.innerHTML = '';
+  const filtered = loggedUser === 'admin' ? data : data.filter(v => v.seller === userMap[loggedUser]);
+  const last = filtered.at(-1);
+  if (!last) return;
+  const div = document.createElement('div');
+  div.className = 'vehicle-item';
+  div.innerHTML = `
+    <div class="vehicle-content">
+      <div class="vehicle-info">
+        <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
+        <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
+        <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
+        <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
+      </div>
+      ${last.imageURL ? `<img src="${last.imageURL}" class="vehicle-thumb"/>` : ''}
+    </div>`;
+  list.appendChild(div);
+}
+
+document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const model = document.getElementById('model').value;
+  const year = document.getElementById('year').value;
+  const color = document.getElementById('color').value;
+  const bodyType = document.getElementById('bodyType').value;
+  const manufacturer = document.getElementById('manufacturer').value;
+  const value = parseFloat(document.getElementById('value').value);
+  const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
+  const dateTime = new Date().toLocaleString('pt-BR');
+  const imageInput = document.getElementById('image');
+  let imageURL = '';
+
+  if (imageInput.files.length > 0) {
+    const reader = new FileReader();
+    reader.onload = async function(evt) {
+      imageURL = evt.target.result;
+      await sendData();
+    };
+    reader.readAsDataURL(imageInput.files[0]);
+  } else {
+    await sendData();
+  }
+
+  async function sendData() {
+    const vehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime, imageURL };
+    await fetch(scriptURL, {
+      method: 'POST',
+      body: JSON.stringify(vehicle),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    document.getElementById('vehicleForm').reset();
+    fetchVehicles();
+  }
+});
+</script>
+</body>
+</html>
