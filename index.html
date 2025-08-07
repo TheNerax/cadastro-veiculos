@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro de Veículos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cadastro de Veículos</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;family=Space+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
@@ -114,6 +115,29 @@
     .vehicle-info {
       flex: 1;
     }
+    .action-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .action-buttons button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #333;
+      color: #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .action-buttons button:hover {
+      background-color: #444;
+    }
     @media (max-width: 768px) {
       .container { flex-direction: column; }
     }
@@ -122,157 +146,281 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
 <body>
-  <div class="login-screen" id="loginScreen">
-    <div class="login-box">
-      <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
-      <input type="text" id="loginUser" placeholder="Usuário" required />
-      <input type="password" id="loginPass" placeholder="Senha" required />
-      <button onclick="login()">Entrar</button>
-    </div>
-  </div>
-
-  <h1><i class="fas fa-car"></i> Cadastro de Veículos</h1>
-  <div id="userInfo">
-    <p>Usuário logado como: <strong id="usernameDisplay"></strong></p>
-    <button id="logoutButton" onclick="logout()">Deslogar</button>
-  </div>
-
-  <div class="container">
-    <div class="form-section">
-      <form id="vehicleForm">
-        <label for="model">Modelo:</label>
-        <input type="text" id="model" required />
-        <label for="year">Ano:</label>
-        <input type="number" id="year" required />
-        <label for="color">Cor:</label>
-        <select id="color" required>
-          <option value="" disabled selected>Selecione a cor</option>
-          <option>Preto</option><option>Prata</option><option>Branco</option>
-        </select>
-        <label for="bodyType">Carroceria:</label>
-        <select id="bodyType" required>
-          <option value="" disabled selected>Selecione a carroceria</option>
-          <option>Sedã</option><option>Hatch</option><option>SUV</option>
-        </select>
-        <label for="manufacturer">Fabricante:</label>
-        <select id="manufacturer" required>
-          <option value="" disabled selected>Selecione o fabricante</option>
-          <option>Fiat</option><option>Ford</option><option>Chevrolet</option>
-        </select>
-        <div id="sellerGroup">
-          <label for="seller">Vendedor:</label>
-          <select id="seller" required>
-            <option value="" disabled selected>Selecione o vendedor</option>
-            <option>Allysson</option><option>Gabriel</option><option>Kaio</option><option>Kaique</option><option>Nicolas</option>
-          </select>
-        </div>
-        <label for="value">Valor da Carta:</label>
-        <input type="number" id="value" required />
-
-        <label for="image">Imagem (opcional):</label>
-        <input type="file" id="image" accept="image/*" />
-
-        <button type="submit" class="submit-btn">Cadastrar</button>
-
-        <div style="text-align:center; margin-top: 15px;">
-          <a href="todos-veiculos.html" style="background-color: #ffd700; color: #000; padding: 10px 20px; border-radius: 30px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3); transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-            <i class="fas fa-list"></i> Ver todos os veículos
+<div class="login-screen" id="loginScreen">
+<img src="https://cdn-icons-png.flaticon.com/512/743/743007.png" style="position:absolute; top:10px; right:10px; width:100px; opacity:0.05;"/>
+<div class="login-box">
+<h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+<input id="loginUser" placeholder="Usuário" required="" type="text"/>
+<input id="loginPass" placeholder="Senha" required="" type="password"/>
+<button onclick="login()">Entrar</button>
+</div>
+</div>
+<h1><i class="fas fa-car"></i> Cadastro de Veículos</h1>
+<div id="userInfo">
+<p>Usuário logado como: <strong id="usernameDisplay"></strong></p>
+<button id="logoutButton" onclick="logout()">Deslogar</button>
+</div>
+<div class="container">
+<div class="form-section">
+<form id="vehicleForm">
+<label for="model">Modelo:</label>
+<input id="model" required="" type="text"/>
+<label for="year">Ano:</label>
+<input id="year" required="" type="number"/>
+<label for="color">Cor:</label>
+<select id="color" required="">
+<option disabled="" selected="" value="">Selecione a cor</option>
+<option>Preto</option><option>Prata</option><option>Branco</option>
+</select>
+<label for="bodyType">Carroceria:</label>
+<select id="bodyType" required="">
+<option disabled="" selected="" value="">Selecione a carroceria</option>
+<option>Sedã</option><option>Hatch</option><option>SUV</option>
+</select>
+<label for="manufacturer">Fabricante:</label>
+<select id="manufacturer" required="">
+<option disabled="" selected="" value="">Selecione o fabricante</option>
+<option>Fiat</option><option>Ford</option><option>Chevrolet</option>
+</select>
+<div id="sellerGroup">
+<label for="seller">Vendedor:</label>
+<select id="seller" required="">
+<option disabled="" selected="" value="">Selecione o vendedor</option>
+<option>Allysson</option><option>Gabriel</option><option>Kaio</option><option>Kaique</option><option>Nicolas</option>
+</select>
+</div>
+<label for="value">Valor da Carta:</label>
+<input id="value" required="" type="number"/>
+<label for="image">Imagem (opcional):</label>
+<input accept="image/*" id="image" type="file"/>
+<button class="submit-btn" type="submit">Cadastrar</button>
+<div style="text-align:center; margin-top: 15px;">
+<a href="todos-veiculos.html" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.05)'" style="
+            background-color: #ffd700;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+          ">
+<i class="fas fa-list"></i> Ver todos os veículos
           </a>
-        </div>
-      </form>
-    </div>
+</div>
+</form>
+</div>
+<div class="list-section">
+<h2 style="text-align: center; margin-bottom: 15px;">Último Veículo Cadastrado</h2>
+<div id="vehicleList"></div>
+</div>
+</div>
+<script>
+  let loggedUser = null;
+  const userMap = {
+    allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
+  };
+  let vehicles = JSON.parse(localStorage.getItem('vehiclesList')) || [];
 
-    <div class="list-section">
-      <h2 style="text-align: center; margin-bottom: 15px;">Último Veículo Cadastrado</h2>
-      <div id="vehicleList"></div>
-    </div>
-  </div>
+  function showUserInfo() {
+    if (loggedUser && userMap[loggedUser]) {
+      document.getElementById('usernameDisplay').textContent = userMap[loggedUser];
+      document.getElementById('userInfo').style.display = 'block';
+    }
+  }
+
+  function login() {
+    const user = document.getElementById('loginUser').value.trim().toLowerCase();
+    const pass = document.getElementById('loginPass').value.trim();
+    if (userMap[user] && pass === user + '123') {
+      loggedUser = user; localStorage.setItem('loggedUser', user);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('sellerGroup').style.display = 'none';
+      document.getElementById('seller').required = false;
+      showUserInfo(); renderVehicleList();
+    } else alert('Usuário ou senha inválidos');
+  }
+
+  function enterWithoutLogin() {
+    document.getElementById('loginScreen').style.display = 'none';
+    renderVehicleList();
+  }
+
+  function logout() {
+    localStorage.removeItem('loggedUser'); location.reload();
+  }
+
+  function saveVehicles() {
+    localStorage.setItem('vehiclesList', JSON.stringify(vehicles));
+  }
+
+  function renderVehicleList(filtered = vehicles.filter(v => v.seller === (loggedUser ? userMap[loggedUser] : null))) {
+    const list = document.getElementById('vehicleList');
+    list.innerHTML = "";
+
+    const last = filtered.length > 0 ? filtered[filtered.length - 1] : null;
+    if (!last) return;
+
+    const i = vehicles.length - 1;
+    const item = document.createElement('div');
+    item.className = 'vehicle-item';
+
+    item.innerHTML = `
+      <div class="vehicle-content">
+        <div class="vehicle-info">
+          <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
+          <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
+          <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
+          <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
+          <div class="action-buttons">
+            <button onclick="editVehicle(${i})"><i class="fas fa-edit"></i> Editar</button>
+            <button onclick="deleteVehicle(${i})" style="color:red;"><i class="fas fa-trash-alt"></i> Excluir</button>
+            <button onclick="viewDetails(${i})"><i class="fas fa-eye"></i> Ver Detalhes</button>
+          </div>
+        </div>
+        ${last.imageURL ? `<img src="${last.imageURL}" alt="Imagem do veículo" class="vehicle-thumb"/>` : ''}
+      </div>
+    `;
+
+    list.appendChild(item);
+  }
+
+  function editVehicle(i) {
+    const v = vehicles[i];
+    document.getElementById('model').value = v.model;
+    document.getElementById('year').value = v.year;
+    document.getElementById('color').value = v.color;
+    document.getElementById('bodyType').value = v.bodyType;
+    document.getElementById('manufacturer').value = v.manufacturer;
+    document.getElementById('value').value = v.value;
+    if (!loggedUser) document.getElementById('seller').value = v.seller;
+    vehicles.splice(i, 1); saveVehicles(); renderVehicleList();
+  }
+
+  function deleteVehicle(i) {
+    if (confirm("Deseja realmente excluir este veículo?")) {
+      vehicles.splice(i, 1); saveVehicles(); renderVehicleList();
+    }
+  }
+
+  document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const model = document.getElementById('model').value;
+    const year = document.getElementById('year').value;
+    const color = document.getElementById('color').value;
+    const bodyType = document.getElementById('bodyType').value;
+    const manufacturer = document.getElementById('manufacturer').value;
+    const value = parseFloat(document.getElementById('value').value);
+    const imageInput = document.getElementById('image');
+    const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
+    const dateTime = new Date().toLocaleString('pt-BR');
+    const newVehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime };
+
+    if (imageInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        newVehicle.imageURL = e.target.result;
+        vehicles.push(newVehicle); saveVehicles(); renderVehicleList();
+      };
+      reader.readAsDataURL(imageInput.files[0]);
+    } else {
+      vehicles.push(newVehicle); saveVehicles(); renderVehicleList();
+    }
+
+    document.getElementById('vehicleForm').reset();
+  });
+
+  function viewDetails(i) {
+    localStorage.setItem('vehicleDetails', JSON.stringify(vehicles[i]));
+    window.location.href = 'vehicle-details.html';
+  }
+
+  window.onload = function () {
+    const savedUser = localStorage.getItem('loggedUser');
+    if (savedUser && userMap[savedUser]) {
+      loggedUser = savedUser;
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('sellerGroup').style.display = 'none';
+      document.getElementById('seller').required = false;
+      showUserInfo();
+    }
+    renderVehicleList();
+  };
+</script>
 
 <script>
-const scriptURL = 'https://script.google.com/macros/s/AKfycbxGCC5K6a0qvV8kUmAX2ro01WW6-ApcgvibWdY88d0yIkgcjHrCTI7sMVaNsr-pyplb/exec';
-let loggedUser = null;
-const userMap = {
-  admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
-};
+  const supabase = supabase.createClient(
+    'https://qlozrbnhwpjkahblfcry.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsb3pyYm5od3Bqa2FoYmxmY3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NzI2MTcsImV4cCI6MjA3MDE0ODYxN30.Rth6sUlT5mvRY4NH8ir6HsFVE4UMVOKSKyuifgJHa9k'
+  );
 
-function login() {
-  const user = document.getElementById('loginUser').value.trim().toLowerCase();
-  const pass = document.getElementById('loginPass').value.trim();
-  if ((user === "admin" && pass === "admingc123") || (userMap[user] && pass === user + '123')) {
-    loggedUser = user;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('sellerGroup').style.display = 'none';
-    document.getElementById('seller').required = false;
-    document.getElementById('usernameDisplay').textContent = userMap[user];
-    fetchVehicles();
-  } else alert('Usuário ou senha inválidos');
-}
-
-function logout() {
-  loggedUser = null;
-  location.reload();
-}
-
-async function fetchVehicles() {
-  const res = await fetch(scriptURL);
-  const data = await res.json();
-  const list = document.getElementById('vehicleList');
-  list.innerHTML = '';
-  const filtered = loggedUser === 'admin' ? data : data.filter(v => v.seller === userMap[loggedUser]);
-  const last = filtered.at(-1);
-  if (!last) return;
-  const div = document.createElement('div');
-  div.className = 'vehicle-item';
-  div.innerHTML = `
-    <div class="vehicle-content">
-      <div class="vehicle-info">
-        <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
-        <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
-        <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
-        <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
-      </div>
-      ${last.imageURL ? `<img src="${last.imageURL}" class="vehicle-thumb"/>` : ''}
-    </div>`;
-  list.appendChild(div);
-}
-
-document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const model = document.getElementById('model').value;
-  const year = document.getElementById('year').value;
-  const color = document.getElementById('color').value;
-  const bodyType = document.getElementById('bodyType').value;
-  const manufacturer = document.getElementById('manufacturer').value;
-  const value = parseFloat(document.getElementById('value').value);
-  const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
-  const dateTime = new Date().toLocaleString('pt-BR');
-  const imageInput = document.getElementById('image');
-  let imageURL = '';
-
-  if (imageInput.files.length > 0) {
-    const reader = new FileReader();
-    reader.onload = async function(evt) {
-      imageURL = evt.target.result;
-      await sendData();
+  async function fetchVehicles() {
+    const { data } = await supabase.from('vehicles').select('*').order('id', { ascending: true });
+    const list = document.getElementById('vehicleList');
+    list.innerHTML = '';
+    const userMap = {
+      admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
     };
-    reader.readAsDataURL(imageInput.files[0]);
-  } else {
-    await sendData();
+    const filtered = loggedUser === 'admin' ? data : data.filter(v => v.seller === userMap[loggedUser]);
+    const last = filtered.at(-1);
+    if (!last) return;
+    const div = document.createElement('div');
+    div.className = 'vehicle-item';
+    div.innerHTML = `
+      <div class="vehicle-content">
+        <div class="vehicle-info">
+          <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
+          <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
+          <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
+          <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
+        </div>
+        ${last.imageURL ? `<img src="${last.imageURL}" class="vehicle-thumb"/>` : ''}
+      </div>`;
+    list.appendChild(div);
   }
 
-  async function sendData() {
-    const vehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime, imageURL };
-    await fetch(scriptURL, {
-      method: 'POST',
-      body: JSON.stringify(vehicle),
-      headers: { 'Content-Type': 'application/json' }
-    });
-    document.getElementById('vehicleForm').reset();
+  document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const userMap = {
+      admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
+    };
+    const model = document.getElementById('model').value;
+    const year = document.getElementById('year').value;
+    const color = document.getElementById('color').value;
+    const bodyType = document.getElementById('bodyType').value;
+    const manufacturer = document.getElementById('manufacturer').value;
+    const value = parseFloat(document.getElementById('value').value);
+    const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
+    const dateTime = new Date().toLocaleString('pt-BR');
+    const imageInput = document.getElementById('image');
+    let imageURL = '';
+
+    const saveVehicle = async () => {
+      const vehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime, imageURL };
+      await supabase.from('vehicles').insert([vehicle]);
+      document.getElementById('vehicleForm').reset();
+      fetchVehicles();
+    };
+
+    if (imageInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        imageURL = evt.target.result;
+        await saveVehicle();
+      };
+      reader.readAsDataURL(imageInput.files[0]);
+    } else {
+      await saveVehicle();
+    }
+  });
+
+  window.onload = function () {
     fetchVehicles();
   }
-});
 </script>
 </body>
 </html>
