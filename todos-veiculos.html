@@ -1,60 +1,270 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Todos os Veículos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #fff;
       padding: 20px;
-      background-color: #f0f0f0;
     }
-    .vehicle {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
+
+    h1 {
+      text-align: center;
+      color: #ffd700;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 20px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .filters input, .filters select {
+      padding: 10px;
       border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: #fff;
     }
-    button {
-      background: #007bff;
-      color: white;
+
+    .view-toggle {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .vehicle-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .vehicle-item {
+      background-color: #1c1c1c;
+      padding: 15px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .grid .vehicle-item {
+      flex-direction: column;
+      max-width: 280px;
+    }
+
+    .vehicle-info {
+      flex: 1;
+    }
+
+    .vehicle-info span {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .vehicle-thumb {
+      max-width: 180px;
+      border-radius: 6px;
+    }
+
+    .action-buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-buttons button {
+      padding: 8px 14px;
       border: none;
-      padding: 6px 10px;
+      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
+      background-color: #333;
+      color: #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
     }
+
+    .action-buttons button:hover {
+      background-color: #444;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #ffd700;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      height: 36px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      background-color: #ffd700;
+      position: absolute;
+      cursor: pointer;
+      border-radius: 34px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: 0.4s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      color: #000;
+      font-size: 16px;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 28px;
+      width: 28px;
+      left: 4px;
+      bottom: 4px;
+      background-color: #000;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(44px);
+    }
+
+    .list-icon { opacity: 1; }
+    .grid-icon { opacity: 0.6; }
+    input:checked + .slider .list-icon { opacity: 0.6; }
+    input:checked + .slider .grid-icon { opacity: 1; }
   </style>
 </head>
 <body>
-  <h1>Todos os Veículos</h1>
-  <div id="list"></div>
+  <h1>Todos os Veículos Cadastrados</h1>
+
+  <div class="filters">
+    <input type="text" id="filterModel" placeholder="Filtrar por modelo">
+    <select id="filterSeller">
+      <option value="">Todos os vendedores</option>
+      <option>Allysson</option>
+      <option>Gabriel</option>
+      <option>Kaio</option>
+      <option>Kaique</option>
+      <option>Nicolas</option>
+    </select>
+    <select id="sortValue">
+      <option value="">Ordenar por valor</option>
+      <option value="asc">Menor valor</option>
+      <option value="desc">Maior valor</option>
+    </select>
+  </div>
+
+  <div class="view-toggle">
+    <label class="switch">
+      <input type="checkbox" id="viewToggle" onchange="toggleView()">
+      <span class="slider">
+        <i class="fas fa-list list-icon"></i>
+        <i class="fas fa-th grid-icon"></i>
+      </span>
+    </label>
+  </div>
+
+  <div id="vehicleList" class="vehicle-list grid"></div>
+
+  <a href="planilha teste.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar ao cadastro</a>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyb6n4u3MesD8fjAgUuuAySUJV1oVe6q46PsZUZrfyCWRotDQnDFGglCXyL6flSvFh13A/exec";
+    const vehicles = JSON.parse(localStorage.getItem('vehiclesList')) || [];
+    const loggedUser = localStorage.getItem('loggedUser');
+    const userMap = {
+      allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
+    };
+    const currentSeller = userMap[loggedUser];
+    let currentView = 'grid';
 
-    async function fetchVehicles() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      const list = document.getElementById("list");
-      list.innerHTML = "";
-      data.forEach(vehicle => {
-        const div = document.createElement("div");
-        div.className = "vehicle";
+    function renderVehicles(filteredList) {
+      const container = document.getElementById('vehicleList');
+      container.className = 'vehicle-list ' + currentView;
+      container.innerHTML = '';
+
+      filteredList.forEach((v, index) => {
+        const div = document.createElement('div');
+        div.className = 'vehicle-item';
         div.innerHTML = `
-          <strong>${{vehicle.model}</strong> - R$${{vehicle.value}<br>
-          Vendedor: ${{vehicle.seller}<br>
-          <button onclick='viewDetails(${{JSON.stringify(vehicle)})'>Ver Detalhes</button>
+          ${v.imageURL ? `<img src="${v.imageURL}" class="vehicle-thumb" />` : ''}
+          <div class="vehicle-info">
+            <span><strong>Modelo:</strong> ${v.model}</span>
+            <span><strong>Vendedor:</strong> ${v.seller}</span>
+            <span><strong>Valor da Carta:</strong> R$ ${v.value}</span>
+            <span><strong>Data:</strong> ${v.dateTime}</span>
+            <div class="action-buttons">
+              <button onclick="viewDetails(${index})"><i class="fas fa-eye"></i> Ver Detalhes</button>
+            </div>
+          </div>
         `;
-        list.appendChild(div);
+        container.appendChild(div);
       });
     }
 
-    function viewDetails(vehicle) {
-      sessionStorage.setItem("vehicleDetails", JSON.stringify(vehicle));
-      window.location.href = "vehicle-details.html";
+    function applyFilters() {
+      const model = document.getElementById('filterModel').value.toLowerCase();
+      const seller = document.getElementById('filterSeller').value;
+      const sort = document.getElementById('sortValue').value;
+      let filtered = [...(currentSeller ? vehicles.filter(v => v.seller === currentSeller) : [])];
+
+      if (model) filtered = filtered.filter(v => v.model.toLowerCase().includes(model));
+      if (seller) filtered = filtered.filter(v => v.seller === seller);
+      if (sort === 'asc') filtered.sort((a, b) => a.value - b.value);
+      if (sort === 'desc') filtered.sort((a, b) => b.value - a.value);
+
+      renderVehicles(filtered);
     }
 
-    fetchVehicles();
+    function toggleView() {
+      const checkbox = document.getElementById('viewToggle');
+      currentView = checkbox.checked ? 'grid' : 'list';
+      applyFilters();
+    }
+
+    function viewDetails(index) {
+      const vehicle = vehicles[index];
+      localStorage.setItem('vehicleDetails', JSON.stringify(vehicle));
+      window.location.href = 'vehicle-details.html';
+    }
+
+    document.getElementById('filterModel').addEventListener('input', applyFilters);
+    document.getElementById('filterSeller').addEventListener('change', applyFilters);
+    document.getElementById('sortValue').addEventListener('change', applyFilters);
+
+    const userVehicles = currentSeller ? vehicles.filter(v => v.seller === currentSeller) : [];
+    renderVehicles(userVehicles);
   </script>
 </body>
 </html>
