@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="pt-br">
-<head>
+<head><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Cadastro de Veículos</title>
@@ -146,7 +146,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+</head>
 <body>
 <div class="login-screen" id="loginScreen">
 <img src="https://cdn-icons-png.flaticon.com/512/743/743007.png" style="position:absolute; top:10px; right:10px; width:100px; opacity:0.05;"/>
@@ -219,208 +219,100 @@
 <div id="vehicleList"></div>
 </div>
 </div>
+
+
 <script>
-  let loggedUser = null;
-  const userMap = {
-    allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
-  };
-  let vehicles = JSON.parse(localStorage.getItem('vehiclesList')) || [];
+  window.onload = function () {
+    const supabase = window.supabase.createClient(
+      'https://qlozrbnhwpjkahblfcry.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsb3pyYm5od3Bqa2FoYmxmY3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NzI2MTcsImV4cCI6MjA3MDE0ODYxN30.Rth6sUlT5mvRY4NH8ir6HsFVE4UMVOKSKyuifgJHa9k'
+    );
 
-  function showUserInfo() {
-    if (loggedUser && userMap[loggedUser]) {
-      document.getElementById('usernameDisplay').textContent = userMap[loggedUser];
-      document.getElementById('userInfo').style.display = 'block';
+    let loggedUser = null;
+    const userMap = {
+      admin: "Administrador",
+      allysson: "Allysson",
+      gabriel: "Gabriel",
+      kaike: "Kaike",
+      kaio: "Kaio",
+      nicolas: "Nicolas"
+    };
+
+    document.querySelector('button[onclick="login()"]').onclick = login;
+    document.getElementById('vehicleForm').addEventListener('submit', handleSubmit);
+
+    function login() {
+      const user = document.getElementById('loginUser').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value.trim();
+      if ((user === "admin" && pass === "admingc123") || (userMap[user] && pass === user + '123')) {
+        loggedUser = user;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('sellerGroup').style.display = 'none';
+        document.getElementById('seller').required = false;
+        document.getElementById('usernameDisplay').textContent = userMap[user];
+        fetchVehicles();
+      } else alert('Usuário ou senha inválidos');
     }
-  }
 
-  function login() {
-    const user = document.getElementById('loginUser').value.trim().toLowerCase();
-    const pass = document.getElementById('loginPass').value.trim();
-    if (userMap[user] && pass === user + '123') {
-      loggedUser = user; localStorage.setItem('loggedUser', user);
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('sellerGroup').style.display = 'none';
-      document.getElementById('seller').required = false;
-      showUserInfo(); renderVehicleList();
-    } else alert('Usuário ou senha inválidos');
-  }
+    function logout() {
+      loggedUser = null;
+      location.reload();
+    }
 
-  function enterWithoutLogin() {
-    document.getElementById('loginScreen').style.display = 'none';
-    renderVehicleList();
-  }
-
-  function logout() {
-    localStorage.removeItem('loggedUser'); location.reload();
-  }
-
-  function saveVehicles() {
-    localStorage.setItem('vehiclesList', JSON.stringify(vehicles));
-  }
-
-  function renderVehicleList(filtered = vehicles.filter(v => v.seller === (loggedUser ? userMap[loggedUser] : null))) {
-    const list = document.getElementById('vehicleList');
-    list.innerHTML = "";
-
-    const last = filtered.length > 0 ? filtered[filtered.length - 1] : null;
-    if (!last) return;
-
-    const i = vehicles.length - 1;
-    const item = document.createElement('div');
-    item.className = 'vehicle-item';
-
-    item.innerHTML = `
-      <div class="vehicle-content">
-        <div class="vehicle-info">
-          <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
-          <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
-          <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
-          <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
-          <div class="action-buttons">
-            <button onclick="editVehicle(${i})"><i class="fas fa-edit"></i> Editar</button>
-            <button onclick="deleteVehicle(${i})" style="color:red;"><i class="fas fa-trash-alt"></i> Excluir</button>
-            <button onclick="viewDetails(${i})"><i class="fas fa-eye"></i> Ver Detalhes</button>
+    async function fetchVehicles() {
+      const { data } = await supabase.from('vehicles').select('*').order('id', { ascending: true });
+      const list = document.getElementById('vehicleList');
+      list.innerHTML = '';
+      const filtered = loggedUser === 'admin' ? data : data.filter(v => v.seller === userMap[loggedUser]);
+      const last = filtered.at(-1);
+      if (!last) return;
+      const div = document.createElement('div');
+      div.className = 'vehicle-item';
+      div.innerHTML = `
+        <div class="vehicle-content">
+          <div class="vehicle-info">
+            <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
+            <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
+            <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
+            <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
           </div>
-        </div>
-        ${last.imageURL ? `<img src="${last.imageURL}" alt="Imagem do veículo" class="vehicle-thumb"/>` : ''}
-      </div>
-    `;
-
-    list.appendChild(item);
-  }
-
-  function editVehicle(i) {
-    const v = vehicles[i];
-    document.getElementById('model').value = v.model;
-    document.getElementById('year').value = v.year;
-    document.getElementById('color').value = v.color;
-    document.getElementById('bodyType').value = v.bodyType;
-    document.getElementById('manufacturer').value = v.manufacturer;
-    document.getElementById('value').value = v.value;
-    if (!loggedUser) document.getElementById('seller').value = v.seller;
-    vehicles.splice(i, 1); saveVehicles(); renderVehicleList();
-  }
-
-  function deleteVehicle(i) {
-    if (confirm("Deseja realmente excluir este veículo?")) {
-      vehicles.splice(i, 1); saveVehicles(); renderVehicleList();
+          ${last.imageURL ? `<img src="${last.imageURL}" class="vehicle-thumb"/>` : ''}
+        </div>`;
+      list.appendChild(div);
     }
-  }
 
-  document.getElementById('vehicleForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const model = document.getElementById('model').value;
-    const year = document.getElementById('year').value;
-    const color = document.getElementById('color').value;
-    const bodyType = document.getElementById('bodyType').value;
-    const manufacturer = document.getElementById('manufacturer').value;
-    const value = parseFloat(document.getElementById('value').value);
-    const imageInput = document.getElementById('image');
-    const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
-    const dateTime = new Date().toLocaleString('pt-BR');
-    const newVehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime };
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const model = document.getElementById('model').value;
+      const year = document.getElementById('year').value;
+      const color = document.getElementById('color').value;
+      const bodyType = document.getElementById('bodyType').value;
+      const manufacturer = document.getElementById('manufacturer').value;
+      const value = parseFloat(document.getElementById('value').value);
+      const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
+      const dateTime = new Date().toLocaleString('pt-BR');
+      const imageInput = document.getElementById('image');
+      let imageURL = '';
 
-    if (imageInput.files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        newVehicle.imageURL = e.target.result;
-        vehicles.push(newVehicle); saveVehicles(); renderVehicleList();
+      const saveVehicle = async () => {
+        const vehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime, imageURL };
+        await supabase.from('vehicles').insert([vehicle]);
+        document.getElementById('vehicleForm').reset();
+        fetchVehicles();
       };
-      reader.readAsDataURL(imageInput.files[0]);
-    } else {
-      vehicles.push(newVehicle); saveVehicles(); renderVehicleList();
-    }
 
-    document.getElementById('vehicleForm').reset();
-  });
-
-  function viewDetails(i) {
-    localStorage.setItem('vehicleDetails', JSON.stringify(vehicles[i]));
-    window.location.href = 'vehicle-details.html';
-  }
-
-  window.onload = function () {
-    const savedUser = localStorage.getItem('loggedUser');
-    if (savedUser && userMap[savedUser]) {
-      loggedUser = savedUser;
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('sellerGroup').style.display = 'none';
-      document.getElementById('seller').required = false;
-      showUserInfo();
-    }
-    renderVehicleList();
-  };
-</script>
-
-<script>
-  const supabase = supabase.createClient(
-    'https://qlozrbnhwpjkahblfcry.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsb3pyYm5od3Bqa2FoYmxmY3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1NzI2MTcsImV4cCI6MjA3MDE0ODYxN30.Rth6sUlT5mvRY4NH8ir6HsFVE4UMVOKSKyuifgJHa9k'
-  );
-
-  async function fetchVehicles() {
-    const { data } = await supabase.from('vehicles').select('*').order('id', { ascending: true });
-    const list = document.getElementById('vehicleList');
-    list.innerHTML = '';
-    const userMap = {
-      admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
-    };
-    const filtered = loggedUser === 'admin' ? data : data.filter(v => v.seller === userMap[loggedUser]);
-    const last = filtered.at(-1);
-    if (!last) return;
-    const div = document.createElement('div');
-    div.className = 'vehicle-item';
-    div.innerHTML = `
-      <div class="vehicle-content">
-        <div class="vehicle-info">
-          <span><i class="fas fa-car"></i><strong> Modelo:</strong> ${last.model}</span>
-          <span><i class="fas fa-user"></i><strong> Vendedor:</strong> ${last.seller}</span>
-          <span><i class="fas fa-money-bill-wave"></i><strong> Valor da Carta:</strong> R$ ${last.value}</span>
-          <span><i class="fas fa-clock"></i><strong> Data/Hora:</strong> ${last.dateTime}</span>
-        </div>
-        ${last.imageURL ? `<img src="${last.imageURL}" class="vehicle-thumb"/>` : ''}
-      </div>`;
-    list.appendChild(div);
-  }
-
-  document.getElementById('vehicleForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const userMap = {
-      admin: "Administrador", allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
-    };
-    const model = document.getElementById('model').value;
-    const year = document.getElementById('year').value;
-    const color = document.getElementById('color').value;
-    const bodyType = document.getElementById('bodyType').value;
-    const manufacturer = document.getElementById('manufacturer').value;
-    const value = parseFloat(document.getElementById('value').value);
-    const seller = loggedUser ? userMap[loggedUser] : document.getElementById('seller').value;
-    const dateTime = new Date().toLocaleString('pt-BR');
-    const imageInput = document.getElementById('image');
-    let imageURL = '';
-
-    const saveVehicle = async () => {
-      const vehicle = { model, year, color, bodyType, manufacturer, seller, value, dateTime, imageURL };
-      await supabase.from('vehicles').insert([vehicle]);
-      document.getElementById('vehicleForm').reset();
-      fetchVehicles();
-    };
-
-    if (imageInput.files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = async function(evt) {
-        imageURL = evt.target.result;
+      if (imageInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = async function(evt) {
+          imageURL = evt.target.result;
+          await saveVehicle();
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
         await saveVehicle();
-      };
-      reader.readAsDataURL(imageInput.files[0]);
-    } else {
-      await saveVehicle();
+      }
     }
-  });
-
-  window.onload = function () {
-    fetchVehicles();
-  }
+  };
 </script>
 </body>
 </html>
