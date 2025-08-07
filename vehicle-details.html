@@ -1,55 +1,220 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes do Veículo</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1c1c1c);
+      color: #fff;
       padding: 20px;
-      background-color: #f9f9f9;
+      animation: fadeIn 1s ease-out;
     }
-    .box {
-      background: white;
+
+    h1 {
+      color: #ffd700;
+      font-family: 'Space Mono', monospace;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    #userInfo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .vehicle-detail {
+      background-color: #1c1c1c;
       padding: 20px;
-      border-radius: 5px;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+      margin-top: 30px;
+      animation: fadeIn 1s ease-out;
+      transition: transform 0.3s;
     }
-    button {
-      margin-right: 10px;
-      padding: 8px 12px;
-      background: #dc3545;
-      color: white;
+
+    .vehicle-detail span {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .vehicle-detail img {
+      max-width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    .highlight {
+      color: #ffd700;
+    }
+
+    .footer-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 40px;
+      gap: 10px;
+    }
+
+    .footer-buttons .left,
+    .footer-buttons .center,
+    .footer-buttons .right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-buttons .center {
+      justify-content: center;
+      flex: 1;
+    }
+
+    .footer-buttons a,
+    .footer-buttons button {
+      padding: 10px 18px;
       border: none;
+      border-radius: 30px;
+      font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-buttons a {
+      background-color: #ffd700;
+      color: #000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .footer-buttons a:hover {
+      background-color: #e5b000;
+      transform: scale(1.05);
+    }
+
+    .edit-btn {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    .delete-btn {
+      background-color: #f44336;
+      color: #fff;
+    }
+
+    .edit-btn:hover,
+    .delete-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .footer-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-buttons .left,
+      .footer-buttons .right {
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
+
   <h1>Detalhes do Veículo</h1>
-  <div class="box" id="details"></div>
+  <div id="userInfo">
+    <p>Usuário: <strong id="usernameDisplay"></strong></p>
+  </div>
+
+  <div class="vehicle-detail" id="vehicleDetail">
+    <!-- Detalhes do veículo preenchidos via JS -->
+  </div>
+
+  <div class="footer-buttons">
+    <div class="left">
+      <a href="planilha teste.html"><i class="fas fa-arrow-left"></i> Voltar ao cadastro</a>
+    </div>
+
+    <div class="center">
+      <button class="edit-btn" onclick="editar()"><i class="fas fa-edit"></i> Editar</button>
+      <button class="delete-btn" onclick="excluir()"><i class="fas fa-trash-alt"></i> Excluir</button>
+    </div>
+
+    <div class="right">
+      <a href="todos-veiculos.html"><i class="fas fa-list"></i> Voltar para a lista</a>
+    </div>
+  </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyb6n4u3MesD8fjAgUuuAySUJV1oVe6q46PsZUZrfyCWRotDQnDFGglCXyL6flSvFh13A/exec";
-    const vehicle = JSON.parse(sessionStorage.getItem("vehicleDetails"));
-    const box = document.getElementById("details");
+    const userMap = {
+      allysson: "Allysson", gabriel: "Gabriel", kaike: "Kaike", kaio: "Kaio", nicolas: "Nicolas"
+    };
 
-    if (vehicle) {
-      box.innerHTML = `
-        <p><strong>Modelo:</strong> ${vehicle.model}</p>
-        <p><strong>Valor:</strong> R$ ${vehicle.value}</p>
-        <p><strong>Vendedor:</strong> ${vehicle.seller}</p>
-        <p><strong>Data:</strong> ${vehicle.dateTime}</p>
-        <button onclick="excluir('${vehicle.id}')">Excluir</button>
-      `;
+    const loggedUser = localStorage.getItem('loggedUser');
+    document.getElementById('usernameDisplay').textContent = userMap[loggedUser] || 'Visitante';
+
+    const vehicle = JSON.parse(localStorage.getItem('vehicleDetails'));
+    if (!vehicle) window.location.href = 'planilha teste.html';
+
+    document.getElementById('vehicleDetail').innerHTML = `
+      <span><strong>Modelo:</strong> ${vehicle.model}</span>
+      <span><strong>Ano:</strong> ${vehicle.year}</span>
+      <span><strong>Cor:</strong> ${vehicle.color}</span>
+      <span><strong>Carroceria:</strong> ${vehicle.bodyType}</span>
+      <span><strong>Fabricante:</strong> ${vehicle.manufacturer}</span>
+      <span><strong>Vendedor:</strong> ${vehicle.seller}</span>
+      <span><strong>Valor da Carta:</strong> R$ ${vehicle.value}</span>
+      <span><strong>Data/Hora:</strong> ${vehicle.dateTime}</span>
+      ${vehicle.imageURL ? `<img src="${vehicle.imageURL}" alt="Imagem do veículo">` : ''}
+    `;
+
+    function editar() {
+      const vehiclesList = JSON.parse(localStorage.getItem('vehiclesList')) || [];
+      const index = vehiclesList.findIndex(v =>
+        v.model === vehicle.model &&
+        v.dateTime === vehicle.dateTime &&
+        v.seller === vehicle.seller
+      );
+
+      if (index >= 0) {
+        vehiclesList.splice(index, 1);
+        localStorage.setItem('vehiclesList', JSON.stringify(vehiclesList));
+      }
+
+      localStorage.setItem('vehicleEdit', JSON.stringify(vehicle));
+      window.location.href = 'planilha teste.html';
     }
 
-    async function excluir(id) {
-      if (!confirm("Confirma exclusão?")) return;
-      await fetch(API_URL + "?id=" + id, { method: "DELETE" });
-      alert("Excluído com sucesso");
-      window.location.href = "todos-veiculos.html";
+    function excluir() {
+      if (!confirm("Tem certeza que deseja excluir este veículo?")) return;
+      let vehiclesList = JSON.parse(localStorage.getItem('vehiclesList')) || [];
+      vehiclesList = vehiclesList.filter(v =>
+        v.model !== vehicle.model || v.dateTime !== vehicle.dateTime
+      );
+      localStorage.setItem('vehiclesList', JSON.stringify(vehiclesList));
+      localStorage.removeItem('vehicleDetails');
+      alert("Veículo excluído.");
+      window.location.href = 'planilha teste.html';
     }
   </script>
+
 </body>
 </html>
